@@ -3,6 +3,23 @@ export interface Size {
   h: number;
 }
 
+export interface Point {
+  x: number;
+  y: number;
+}
+
+export interface Graph {
+  origin: Point;
+
+}
+
+export type ExprType = ['defi', 'ineq'][number];
+
+export interface Expr {
+  type: ExprType;
+  expression: string;
+}
+
 export interface ParseResult {
   // 正しい構文かどうか
   status: boolean;

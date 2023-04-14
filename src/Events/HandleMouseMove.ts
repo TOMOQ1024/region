@@ -7,7 +7,6 @@ export default function HandleMouseMove(e: MouseEvent){
       //e.preventDefault();
       if(e.buttons & 0b01){
         // 左ボタンドラッグ時
-        console.log(e.movementX);
         const cwr = document.getElementById('controls-wrapper') as HTMLElement;
         if(!cwr)return;
         let w0 = cwr.style.width.match(/\d+/);

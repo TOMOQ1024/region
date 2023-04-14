@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import './App.css';
 import Controls from './Components/Controls';
 import GLWrapper from './Components/GLWrapper';
-import { addEventListeners, removeEventListeners } from './MouseEvents/EventListeners';
+import { addEventListeners, removeEventListeners } from './Events/EventListeners';
 
 function App() {
   const [controlsWidth, setControlsWidth] = useState(100);

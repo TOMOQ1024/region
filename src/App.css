@@ -1,3 +1,7 @@
+:root {
+  --codefont: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace
+}
+
 * {
   overflow: hidden;
 }
@@ -15,6 +19,15 @@
   overflow: visible;
 }
 
+#Controls * {
+  font-family: var(--codefont);
+}
+
+#controls-header {
+  height: 40px;
+  background: linear-gradient(180deg, #fff, #ccc);
+}
+
 #controls-resizer {
   display: inline-block;
   position: absolute;
@@ -24,4 +37,44 @@
   height: 100vh;
   cursor: ew-resize;
   z-index: 10;
+}
+
+.expression-banner > * {
+  vertical-align: middle;
+}
+
+.expression-banner::after {
+  content: '';
+  display: block;
+  margin: 2px 4px;
+  height: 1px;
+  background-color: #00000022;
+}
+
+.expression-icon {
+  display: inline-block;
+  font-size: 30px;
+  text-align: center;
+  width: 32px;
+  height: auto;
+  background-color: #00000010;
+  margin: 2px;
+  border-radius: 20%;
+  user-select: none;
+  cursor: pointer;
+}
+
+#Controls .textarea {
+  border: none;
+  resize: none;
+  outline: none;
+  display: inline-block;
+  padding: 2px;
+  margin: 2px;
+  background-color: #00000020;
+  width: calc(100% - 48px);
+  min-height: 26px;
+  text-shadow: 0 0 3px white,
+               0 0 3px white,
+               0 0 3px white;
 }
