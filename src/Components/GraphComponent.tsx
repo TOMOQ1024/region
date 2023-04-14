@@ -1,5 +1,5 @@
 import { Shaders, Node, GLSL } from "gl-react";
-import { Size } from "./Utils";
+import { Size } from "../Utils";
 
 export default function GraphComponent({
   exp,

@@ -1,7 +1,7 @@
 import { Surface } from "gl-react-dom"; // for React DOM
 import { useState } from "react";
 import GraphComponent from "./GraphComponent";
-import { Size } from "./Utils";
+import { Size } from "../Utils";
 
 export default function GLWrapper(){
   const [res, setRes] = useState<Size>({w:800, h:800});

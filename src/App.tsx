@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import './App.css';
-import Controls from './Controls';
-import GLWrapper from './GLWrapper';
+import Controls from './Components/Controls';
+import GLWrapper from './Components/GLWrapper';
 import { addEventListeners, removeEventListeners } from './MouseEvents/EventListeners';
 
 function App() {
