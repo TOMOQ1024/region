@@ -2,24 +2,26 @@
   overflow: hidden;
 }
 
-.App {
-  text-align: center;
+#App {
   height: 100vh;
+  display: flex;
 }
 
-.App main {
-  height: 100%;
+#Controls {
+  display: flex;
+  height: 100vh;
+  background-color: #7dc9c9a4;
   position: relative;
-}
-
-.App main > * {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  translate: -50% -50%;
   overflow: visible;
 }
 
-.App main > * > * {
-  max-height: 95%;
+#controls-resizer {
+  display: inline-block;
+  position: absolute;
+  left: 100%;
+  top: 0;
+  width: 10px;
+  height: 100vh;
+  cursor: ew-resize;
+  z-index: 10;
 }

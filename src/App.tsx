@@ -1,15 +1,25 @@
+import { useEffect, useState } from 'react';
 import './App.css';
-import GLTest from './GLTest';
+import Controls from './Controls';
+import GLWrapper from './GLWrapper';
+import { addEventListeners, removeEventListeners } from './MouseEvents/EventListeners';
 
 function App() {
+  const [controlsWidth, setControlsWidth] = useState(100);
+  useEffect(()=>{
+    addEventListeners();
+    return ()=>{
+      removeEventListeners();
+    }
+  }, []);
+
   return (
-    <div className="App">
-      <main>
-        <div>
-          <GLTest></GLTest>
-        </div>
-      </main>
-    </div>
+    <main
+    id='App'
+    >
+      <Controls/>
+      <GLWrapper/>
+    </main>
   );
 }
 
