@@ -1,5 +1,5 @@
 import { Key } from "react";
-import { Expr } from "../../Utils"
+import { Expr } from "../Utils"
 
 export default function ExpressionBanner(
   {expression}: {
@@ -16,5 +16,6 @@ export default function ExpressionBanner(
     >
       {expression.expression}
     </span>
+    <div className='expression-del-icon' onClick={e=>(e.target as HTMLElement).parentElement?.parentElement?.removeChild((e.target as HTMLElement).parentElement!)}>x</div>
   </div>
 }

@@ -16,16 +16,22 @@
   height: 100vh;
   background-color: #7dc9c9a4;
   position: relative;
+  -ms-overflow-style: none;
   overflow: visible;
 }
 
-#Controls * {
+#controls-wrapper {
   font-family: var(--codefont);
+  overflow-y: scroll;
 }
 
 #controls-header {
   height: 40px;
   background: linear-gradient(180deg, #fff, #ccc);
+}
+
+#controls-wrapper::-webkit-scrollbar {
+  display: none;
 }
 
 #controls-resizer {
@@ -64,6 +70,20 @@
   cursor: pointer;
 }
 
+.expression-del-icon {
+  display: inline-block;
+  font-size: 30px;
+  text-align: center;
+  width: 20px;
+  height: auto;
+  background-color: #00000010;
+  margin: 2px;
+  padding: 0 5px;
+  border-radius: 20%;
+  user-select: none;
+  cursor: pointer;
+}
+
 #Controls .textarea {
   border: none;
   resize: none;
@@ -72,7 +92,7 @@
   padding: 2px;
   margin: 2px;
   background-color: #00000020;
-  width: calc(100% - 48px);
+  width: calc(100% - 80px);
   min-height: 26px;
   text-shadow: 0 0 3px white,
                0 0 3px white,
