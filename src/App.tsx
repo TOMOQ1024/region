@@ -6,12 +6,12 @@ import { addEventListeners, removeEventListeners } from './Events/EventListeners
 
 function App() {
   const [controlsWidth, setControlsWidth] = useState(100);
-  useEffect(()=>{
-    addEventListeners();
-    return ()=>{
-      removeEventListeners();
-    }
-  }, []);
+  // useEffect(()=>{
+  //   addEventListeners();
+  //   return ()=>{
+  //     removeEventListeners();
+  //   }
+  // }, []);
 
   return (
     <main

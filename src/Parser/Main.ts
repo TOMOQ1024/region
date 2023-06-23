@@ -1,12 +1,16 @@
 import { ParseResult } from "../Utils";
-import Tokenize from "./Tokenize";
+import Parser from "./Parser";
 
 export function Parse(input: string): ParseResult {
-  let tokens = Tokenize(input);
-  let i = 0;
+  let parser = new Parser();
+
+  let n = performance.now();
+  console.log(`input: "${input}"`);
+  parser.parse(input);
+  console.log(`parse end in ${performance.now()-n}ms`);
   
   return ({
     status: false,
     result: ''
-  })
+  });
 }

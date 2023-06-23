@@ -17,6 +17,7 @@ export type ExprType = ['defi', 'ineq'][number];
 
 export interface Expr {
   type: ExprType;
+  index: number;
   expression: string;
 }
 
