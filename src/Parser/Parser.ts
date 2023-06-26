@@ -17,7 +17,11 @@ export default class Parser {
     this.currentPointer = 0;
 
     try {
-      console.log(this.expr());
+      this.nextToken();
+      console.clear();
+      let result = this.expr();
+      console.log(result);
+      console.log(result.toString());
     } catch (e) {
       console.error(e);
       process.exit(1);
@@ -26,7 +30,7 @@ export default class Parser {
 
   expr(): BNode {
     let node: BNode;
-    this.nextToken();
+    // this.nextToken();
     if(this.consumeToken(TokenType.SUB)){
       node = new BNode(BNodeKind.SUB, this.mult(), BNode.zero);
     }
@@ -56,8 +60,7 @@ export default class Parser {
       } else if(this.consumeToken(TokenType.DIV)){
         node = new BNode(BNodeKind.DIV, this.powr(), node);
       } else if(!this.checkTokens(TokenType.ADD, TokenType.SUB, TokenType.CMA, TokenType.RPT) && !this.checkToken(TokenType.EOL)){
-        console.log(this.token);
-        node = new BNode(BNodeKind.UNK, this.powr(), node);
+        node = new BNode(BNodeKind.MUL, this.powr(), node);
       } else {
         return node;
       }
@@ -90,9 +93,35 @@ export default class Parser {
     // }
     return this.nmbr(this.expectNumber());
   }
+/*
+Node* func(int id)
+{
+	Node* node;
 
+
+	if (consume("(")) {
+		node = expr();
+		while (consume(",")) {
+			node = new_node_func(id, node, expr());
+		}
+		expect(")");
+		return node->kind == ND_FNC ? node : new_node_func(id, node, NULL);
+	}
+	return new_node_func(id, mult(), NULL);
+}
+*/
   func(fn: FuncName): BNode {
-    return new BNode(BNodeKind.FNC, null, null, fn);
+    let node : BNode;
+
+    if(this.consumeToken(TokenType.LPT)){
+      node = this.expr();
+      while(this.consumeToken(TokenType.CMA)){
+        node = new BNode(BNodeKind.FNC, node, this.expr(), FuncName.NIL);
+      }
+      this.expectToken(TokenType.RPT);
+      return node.kind === BNodeKind.FNC ? node : new BNode(BNodeKind.FNC, node, null, fn);
+    }
+    return new BNode(BNodeKind.FNC, this.mult(), null, fn);
   }
 
   vari(): BNode {
@@ -120,7 +149,10 @@ export default class Parser {
   }
 
   nextToken() {
+    (async s=> await (s_=>new Promise( resolve => setTimeout(resolve, 1000*s_) ))(s))( 0.5 );
     let character = this.character();
+    let str = this.currentLine.slice(this.currentPointer);
+    let fn: FuncName;
     this.token = new Token(TokenType.UNK, 0, character);
 
     if (character === undefined) {
@@ -136,6 +168,13 @@ export default class Parser {
       }
       this.token.type = TokenType.NUM;
       this.token.value = parseInt(numberText, 10);
+      return;
+    }
+
+    if (fn = this.isFunction(str)) {
+      this.token.type = TokenType.FNC;
+      this.token.value = fn;
+      for(let i=0; i<fn.length; i++) this.nextCharacter();
       return;
     }
 
@@ -159,8 +198,14 @@ export default class Parser {
       case '/':
         this.token.type = TokenType.DIV;
         break;
+      case '^':
+        this.token.type = TokenType.POW;
+        break;
       case '=':
         this.token.type = TokenType.EQL;
+        break;
+      case ',':
+        this.token.type = TokenType.CMA;
         break;
       case '(':
         this.token.type = TokenType.LPT;
@@ -214,13 +259,9 @@ void expect(char* op)
 
   consumeFunc(): FuncName {
     if(this.token.type != TokenType.FNC)return FuncName.NIL;
-    let str = this.currentLine.slice(this.currentPointer);
-    for(let fName in FuncName) {
-      if((new RegExp(`^${fName}`)).test(str)){
-        return fName as FuncName;
-      }
-    }
-    return FuncName.NIL;
+    let fn = this.token.value as FuncName;
+    this.nextToken();
+    return fn;
   }
 
   expectNumber(): number {
@@ -238,6 +279,18 @@ void expect(char* op)
 
   isVariable(text: string): boolean {
     return /[a-z]+/.test(text);
+  }
+
+  isFunction(text: string): FuncName {
+    let fns = Object.values(FuncName);
+    let fn: FuncName;
+    for(let i=0; i<fns.length; i++){
+      fn = fns[i];
+      if(fn && (new RegExp(`^${fn}`)).test(text)){
+        return fn;
+      }
+    }
+    return FuncName.NIL;
   }
 
   setVar(index: number, value: number) {

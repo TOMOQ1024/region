@@ -1,4 +1,6 @@
 export enum FuncName {
+  NIL = '',
+
   COS = 'cos',
   SIN = 'sin',
   TAN = 'tan',
@@ -8,5 +10,9 @@ export enum FuncName {
   ABS = 'abs',
   SQR = 'sqrt',
   CBR = 'cbrt',
-  NIL = '',
+
+  MAX = 'max',
+  MIN = 'min',
+  MED = 'median',
+  AVG = 'average',
 }

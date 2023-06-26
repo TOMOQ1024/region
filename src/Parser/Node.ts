@@ -21,4 +21,12 @@ export class BNode {
   ){}
 
   static zero = new BNode(BNodeKind.NUM, null, null, 0);
+
+  toString(i:number=0){
+    let str = '';
+    str += `${''.padStart(i,'| ')}${this.kind} : ${this.val}\n`;
+    if(this.lhs !== null) str += `${this.lhs.toString(i+2)}`;
+    if(this.rhs !== null) str += `${this.rhs.toString(i+2)}`;
+    return str;
+  }
 }
