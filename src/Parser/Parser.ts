@@ -1,4 +1,3 @@
-import { CStack } from './CStack';
 import { BNodeKind, BNode } from './Node';
 import { FuncName } from "./Func";
 import { Token, TokenType } from './Token'
@@ -7,24 +6,37 @@ export default class Parser {
   vars: number[] = [];
   currentLine: string = '';
   currentPointer: number = 0;
-  cstack = new CStack();
   token = new Token();
 
   constructor(){}
 
-  parse(input: string) {
+  parse(input: string): BNode {
     this.currentLine = input;
     this.currentPointer = 0;
 
     try {
       this.nextToken();
-      console.clear();
-      let result = this.expr();
-      console.log(result);
-      console.log(result.toString());
+      return this.ineq();
     } catch (e) {
       console.error(e);
       process.exit(1);
+    }
+  }
+
+  ineq(): BNode {
+    let node = this.expr();
+    for(;;){
+      if(this.consumeToken(TokenType.GEQ)){
+        node = new BNode(BNodeKind.GEQ, node, this.expr());
+      } else if(this.consumeToken(TokenType.LEQ)){
+        node = new BNode(BNodeKind.LEQ, node, this.expr());
+      } else if(this.consumeToken(TokenType.GET)){
+        node = new BNode(BNodeKind.GET, node, this.expr());
+      } else if(this.consumeToken(TokenType.LET)){
+        node = new BNode(BNodeKind.LET, node, this.expr());
+      } else {
+        return node;
+      }
     }
   }
 
@@ -32,7 +44,7 @@ export default class Parser {
     let node: BNode;
     // this.nextToken();
     if(this.consumeToken(TokenType.SUB)){
-      node = new BNode(BNodeKind.SUB, this.mult(), BNode.zero);
+      node = new BNode(BNodeKind.SUB, BNode.zero, this.mult());
     }
     else {
       this.consumeToken(TokenType.ADD);
@@ -40,10 +52,10 @@ export default class Parser {
     }
     for(;;){
       if(this.consumeToken(TokenType.ADD)){
-        node = new BNode(BNodeKind.ADD, this.mult(), node);
+        node = new BNode(BNodeKind.ADD, node, this.mult());
       }
       else if(this.consumeToken(TokenType.SUB)){
-        node = new BNode(BNodeKind.SUB, this.mult(), node);
+        node = new BNode(BNodeKind.SUB, node, this.mult());
       }
       else {
         return node;
@@ -56,11 +68,13 @@ export default class Parser {
 
     for(;;){
       if(this.consumeToken(TokenType.MUL)){
-        node = new BNode(BNodeKind.MUL, this.powr(), node);
+        node = new BNode(BNodeKind.MUL, node, this.powr());
+      } else if(this.consumeToken(TokenType.MOD)){
+        node = new BNode(BNodeKind.MOD, node, this.powr());
       } else if(this.consumeToken(TokenType.DIV)){
-        node = new BNode(BNodeKind.DIV, this.powr(), node);
+        node = new BNode(BNodeKind.DIV, node, this.powr());
       } else if(!this.checkTokens(TokenType.ADD, TokenType.SUB, TokenType.CMA, TokenType.RPT) && !this.checkToken(TokenType.EOL)){
-        node = new BNode(BNodeKind.MUL, this.powr(), node);
+        node = new BNode(BNodeKind.MUL, node, this.powr());
       } else {
         return node;
       }
@@ -115,11 +129,24 @@ Node* func(int id)
 
     if(this.consumeToken(TokenType.LPT)){
       node = this.expr();
+      if(this.consumeToken(TokenType.CMA)){
+        node = new BNode(
+          BNodeKind.FNC,
+          new BNode(BNodeKind.FNC, node, null, FuncName.NIL),
+          this.expr(),
+          FuncName.NIL
+        );
+      }
       while(this.consumeToken(TokenType.CMA)){
         node = new BNode(BNodeKind.FNC, node, this.expr(), FuncName.NIL);
       }
       this.expectToken(TokenType.RPT);
-      return node.kind === BNodeKind.FNC ? node : new BNode(BNodeKind.FNC, node, null, fn);
+      if(node.kind === BNodeKind.FNC && node.val === FuncName.NIL){
+        node.val = fn;
+        return node;
+      } else {
+        return new BNode(BNodeKind.FNC, node, null, fn);
+      }
     }
     return new BNode(BNodeKind.FNC, this.mult(), null, fn);
   }
@@ -198,11 +225,26 @@ Node* func(int id)
       case '/':
         this.token.type = TokenType.DIV;
         break;
+      case '%':
+        this.token.type = TokenType.MOD;
+        break;
       case '^':
         this.token.type = TokenType.POW;
         break;
       case '=':
         this.token.type = TokenType.EQL;
+        break;
+      case '>=':
+        this.token.type = TokenType.GEQ;
+        break;
+      case '<=':
+        this.token.type = TokenType.LEQ;
+        break;
+      case '>':
+        this.token.type = TokenType.GET;
+        break;
+      case '<':
+        this.token.type = TokenType.LET;
         break;
       case ',':
         this.token.type = TokenType.CMA;
@@ -220,14 +262,7 @@ Node* func(int id)
     this.nextCharacter();
     return;
   }
-/*
-void expect(char* op)
-{
-	if (token->kind != TK_RESERVED || strncmp(token->str, op, strlen(op)) != 0)
-		error("'%s'ではありません", op);
-	token = token->next;
-}
-*/
+
   expectToken(type: TokenType) {
     if(this.token.type != type){
       console.error(`Unexpected token error. Expected TokenType: ${type}, but caught following token`, this.token);

@@ -2,14 +2,25 @@ import { FuncName } from "./Func";
 
 export enum BNodeKind {
   VAR = 'var',
+  EQL = 'eql',
+  GEQ = 'geq',
+  LEQ = 'leq',
+  GET = 'get',
+  LET = 'let',
   ADD = 'add',
   SUB = 'sub',
   MUL = 'mul',
   DIV = 'div',
+  MOD = 'mod',
   POW = 'pow',
   NUM = 'num',
   FNC = 'fnc',
   UNK = 'unk'
+}
+
+export function isBNodeKind(input: any){
+  let s = String(input);
+  return 0<=Object.values(BNodeKind).map(t=>String(t)).indexOf(s);
 }
 
 export class BNode {
@@ -22,11 +33,11 @@ export class BNode {
 
   static zero = new BNode(BNodeKind.NUM, null, null, 0);
 
-  toString(i:number=0){
+  toStr(i:number=0){
     let str = '';
     str += `${''.padStart(i,'| ')}${this.kind} : ${this.val}\n`;
-    if(this.lhs !== null) str += `${this.lhs.toString(i+2)}`;
-    if(this.rhs !== null) str += `${this.rhs.toString(i+2)}`;
+    if(this.lhs !== null) str += `${this.lhs.toStr(i+2)}`;
+    if(this.rhs !== null) str += `${this.rhs.toStr(i+2)}`;
     return str;
   }
 }
