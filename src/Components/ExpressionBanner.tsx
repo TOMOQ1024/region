@@ -1,40 +1,61 @@
+import { useEffect, useRef, useState } from "react";
+import GraphMgr from "../GraphManager/GraphMgr";
 import { Parse } from "../Parser/Main";
-import { Expr } from "../Utils"
+import ReactDOM from "react-dom";
 
 export default function ExpressionBanner(
-  {expression, setExpression, setStatementAt, removeExpression}: {
-    expression: Expr;
-    setExpression: (s: string) => void;
-    setStatementAt: (i: number, s:string) => void;
-    removeExpression: (i: number) => void;
+  {gmgr, updateGmgr, exprno}: {
+    gmgr: GraphMgr;
+    updateGmgr: () => void;
+    exprno: number;
   }
 ){
+  const ref = useRef<HTMLElement>(null);
+
+  useEffect(()=>{
+    // ref.current?.focus();
+  });
+
   function HandleInput(e: InputEvent){
-    const textarea = e.target as HTMLSpanElement;
-    // console.log('--- parse test ---');
+    let textarea = e.target as HTMLSpanElement;
+
+    // 現在のカーソルによる選択場所を記録
+    let range0 = window.getSelection()?.getRangeAt(0);
+    let so = range0?.startOffset as number;
+    let eo = range0?.endOffset as number;
+    let range = document.createRange();
+    
+    // テキストの解析
     let result = Parse(textarea.innerText);
+
     if(result.status){
-      setExpression(textarea.innerText);
-      setStatementAt(0, result.result);
+      gmgr.setExpressionAt(exprno, textarea.innerText);
+      gmgr.setStatementAt(exprno, result.result);
+      updateGmgr();
+
+      // 再描画が行われるため，カーソルの選択場所を復元する
       setTimeout(()=>{
-        textarea.focus();
-      }, 100);
+        range.setStart(textarea.firstChild!, so);
+        range.setEnd(textarea.firstChild!, eo);
+        window.getSelection()?.removeAllRanges();
+        window.getSelection()?.addRange(range);
+      }, 10);
     }
-    // console.log(textarea.innerText);
   }
 
   return <div className='expression-banner'>
-    <div className='expression-icon'>{expression.type==='defi' ? '=' : '>'}</div>
+    <div className='expression-icon'>{gmgr.expressions[exprno].type==='defi' ? '=' : '>'}</div>
     <span
       className="textarea"
       role="textbox"
+      ref={ref}
       contentEditable
       suppressContentEditableWarning
       onInput={e=>HandleInput(e as unknown as InputEvent)}
     >
-      {expression.expression}
+      {gmgr.expressions[exprno].expression}
     </span>
-    <div className='expression-del-icon' onClick={e=>removeExpression(1)}>x</div>
+    <div className='expression-del-icon' onClick={e=>gmgr.removeExpressionAt(exprno)}>x</div>
     {/* <div className='expression-del-icon' onClick={e=>(e.target as HTMLElement).parentElement?.parentElement?.removeChild((e.target as HTMLElement).parentElement!)}>x</div> */}
   </div>
 }

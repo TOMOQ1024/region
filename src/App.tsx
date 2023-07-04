@@ -3,10 +3,10 @@ import './App.css';
 import Controls from './Components/Controls';
 import GLWrapper from './Components/GLWrapper';
 import { addEventListeners, removeEventListeners } from './Events/EventListeners';
+import GraphMgr from './GraphManager/GraphMgr';
 
 function App() {
-  const [controlsWidth, setControlsWidth] = useState(100);
-  const [statements, setStatements] = useState<string[]>(['1.0>x*x+y*x']);
+  const [gmgr, setGmgr] = useState(new GraphMgr());
   // useEffect(()=>{
   //   addEventListeners();
   //   return ()=>{
@@ -14,20 +14,12 @@ function App() {
   //   }
   // }, []);
 
-  function setStatementAt(i:number, s:string){
-    setStatements(stm=>{
-      let rtn = [...stm];
-      rtn[i] = s;
-      return rtn;
-    });
-  }
-
   return (
     <main
     id='App'
     >
-      <Controls setStatementAt={setStatementAt}/>
-      <GLWrapper statements={statements}/>
+      <Controls gmgr={gmgr} updateGmgr={()=>setGmgr(g=>Object.assign(new GraphMgr(), g))}/>
+      <GLWrapper gmgr={gmgr}/>
     </main>
   );
 }
