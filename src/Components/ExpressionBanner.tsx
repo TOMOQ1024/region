@@ -2,15 +2,24 @@ import { Parse } from "../Parser/Main";
 import { Expr } from "../Utils"
 
 export default function ExpressionBanner(
-  {expression, removeExpression}: {
+  {expression, setExpression, setStatementAt, removeExpression}: {
     expression: Expr;
+    setExpression: (s: string) => void;
+    setStatementAt: (i: number, s:string) => void;
     removeExpression: (i: number) => void;
   }
 ){
   function HandleInput(e: InputEvent){
     const textarea = e.target as HTMLSpanElement;
     // console.log('--- parse test ---');
-    Parse(textarea.innerText);
+    let result = Parse(textarea.innerText);
+    if(result.status){
+      setExpression(textarea.innerText);
+      setStatementAt(0, result.result);
+      setTimeout(()=>{
+        textarea.focus();
+      }, 100);
+    }
     // console.log(textarea.innerText);
   }
 

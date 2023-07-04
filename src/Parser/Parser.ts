@@ -1,6 +1,7 @@
 import { BNodeKind, BNode } from './Node';
 import { FuncName } from "./Func";
 import { Token, TokenType } from './Token'
+import { VarName } from './Var';
 
 export default class Parser {
   vars: number[] = [];
@@ -73,7 +74,10 @@ export default class Parser {
         node = new BNode(BNodeKind.MOD, node, this.powr());
       } else if(this.consumeToken(TokenType.DIV)){
         node = new BNode(BNodeKind.DIV, node, this.powr());
-      } else if(!this.checkTokens(TokenType.ADD, TokenType.SUB, TokenType.CMA, TokenType.RPT) && !this.checkToken(TokenType.EOL)){
+      } else if(!this.checkTokens(
+        TokenType.ADD, TokenType.SUB, TokenType.CMA, TokenType.RPT,
+        TokenType.GEQ, TokenType.LEQ, TokenType.GET, TokenType.LET,
+      ) && !this.checkToken(TokenType.EOL)){
         node = new BNode(BNodeKind.MUL, node, this.powr());
       } else {
         return node;
@@ -94,6 +98,7 @@ export default class Parser {
   prim(): BNode {
     let node: BNode;
     let fn: FuncName;
+    let vn: VarName;
     if(this.consumeToken(TokenType.LPT)){
       node = this.expr();
       this.expectToken(TokenType.RPT);
@@ -102,9 +107,9 @@ export default class Parser {
     else if(fn = this.consumeFunc()){
       return this.func(fn);
     }
-    // else if(fn = this.consumeVar()){
-    //   return this.vari(fn);
-    // }
+    else if(vn = this.consumeVar()){
+      return this.vari(vn);
+    }
     return this.nmbr(this.expectNumber());
   }
 /*
@@ -151,8 +156,8 @@ Node* func(int id)
     return new BNode(BNodeKind.FNC, this.mult(), null, fn);
   }
 
-  vari(): BNode {
-    return new BNode();
+  vari(vn: VarName): BNode {
+    return new BNode(BNodeKind.VAR, null, null, vn);
   }
 
   nmbr(x: number): BNode {
@@ -180,6 +185,7 @@ Node* func(int id)
     let character = this.character();
     let str = this.currentLine.slice(this.currentPointer);
     let fn: FuncName;
+    let vn: VarName;
     this.token = new Token(TokenType.UNK, 0, character);
 
     if (character === undefined) {
@@ -205,10 +211,10 @@ Node* func(int id)
       return;
     }
 
-    if (this.isVariable(character)) {
+    if (vn = this.isVariable(str)) {
       this.token.type = TokenType.VAR;
-      this.token.value = character.charCodeAt(0) - 'a'.charCodeAt(0);
-      this.nextCharacter();
+      this.token.value = vn;
+      for(let i=0; i<vn.length; i++) this.nextCharacter();
       return;
     }
 
@@ -265,7 +271,7 @@ Node* func(int id)
 
   expectToken(type: TokenType) {
     if(this.token.type != type){
-      console.error(`Unexpected token error. Expected TokenType: ${type}, but caught following token`, this.token);
+      throw new Error(`Unexpected token error. Expected TokenType: ${type}, but caught following token: ${this.token.type}`);
     }
     this.nextToken();
   }
@@ -299,9 +305,16 @@ Node* func(int id)
     return fn;
   }
 
+  consumeVar(): VarName {
+    if(this.token.type != TokenType.VAR)return VarName.NIL;
+    let vn = this.token.value as VarName;
+    this.nextToken();
+    return vn;
+  }
+
   expectNumber(): number {
     if(this.token.type != TokenType.NUM){
-      console.error(`Unexpected token error. Expected TokenType: NUM, but caught following token`, this.token);
+      throw new Error(`Unexpected token error. Expected TokenType: NUM, but caught following token: ${this.token.type}`);
     }
     let val = this.token.value;
     this.nextToken();
@@ -312,8 +325,16 @@ Node* func(int id)
     return /\d+/.test(text);
   }
 
-  isVariable(text: string): boolean {
-    return /[a-z]+/.test(text);
+  isVariable(text: string): VarName {
+    let vns = Object.values(VarName);
+    let vn: VarName;
+    for(let i=0; i<vns.length; i++){
+      vn = vns[i];
+      if(vn && (new RegExp(`^${vn}`)).test(text)){
+        return vn;
+      }
+    }
+    return VarName.NIL;
   }
 
   isFunction(text: string): FuncName {

@@ -1,5 +1,6 @@
 import { FuncName, isFuncName } from "./Func";
 import { BNode, BNodeKind, isBNodeKind } from "./Node";
+import { VarName } from "./Var";
 
 export type OpStack = (number|FuncName|BNodeKind)[];
 
@@ -90,7 +91,19 @@ export class CStack {
           case FuncName.AVG: return `average(${this.togl(node.lhs)},${this.togl(node.rhs)})`;
         }
         break;
+      case BNodeKind.VAR:
+        switch(node.val){
+          case VarName.X: return `x`;
+          case VarName.Y: return `y`;
+          case VarName.PI: return `3.14`;
+          case VarName.E: return `2.71`;
+        }
+        break;
       case BNodeKind.NUM: return `float(${node.val})`;
+      case BNodeKind.GEQ: return `${this.togl(node.lhs)}>=${this.togl(node.rhs)}`;
+      case BNodeKind.LEQ: return `${this.togl(node.lhs)}<=${this.togl(node.rhs)}`;
+      case BNodeKind.GET: return `${this.togl(node.lhs)}>${this.togl(node.rhs)}`;
+      case BNodeKind.LET: return `${this.togl(node.lhs)}<${this.togl(node.rhs)}`;
       case BNodeKind.ADD: return `${this.togl(node.lhs)}+${this.togl(node.rhs)}`;
       case BNodeKind.SUB: return `${this.togl(node.lhs)}-${this.togl(node.rhs)}`;
       case BNodeKind.MUL: return `${this.togl(node.lhs)}*${this.togl(node.rhs)}`;
