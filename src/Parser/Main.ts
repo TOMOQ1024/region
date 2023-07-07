@@ -21,8 +21,7 @@ export function Parse(input: string): ParseResult {
   try {
     n = performance.now();
     result = parser.parse(input);
-    console.log(result);
-    console.log(result.toString());
+    console.log(result.toStr());
     console.log(`parse end in ${performance.now()-n}ms`);
     cst = new CStack(result);
     console.log(cst.togl(cst.root));
