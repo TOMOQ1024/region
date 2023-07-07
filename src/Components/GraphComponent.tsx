@@ -1,14 +1,17 @@
 import { Shaders, Node, GLSL } from "gl-react";
-import { Size } from "../Utils";
+import { Point, Size } from "../Utils";
 
 export default function GraphComponent({
   exp,
-  res
+  res,
+  origin,
+  scale,
 }:{
   exp: string;
   res: Size;
+  origin: Point;
+  scale: number;
 }) {
-  const scale = 10/800;
   const shaders = Shaders.create({
     graph: {
       frag: GLSL`
@@ -24,7 +27,7 @@ export default function GraphComponent({
   }
 
   void main() {
-    gl_FragColor = f((uv.x-0.5)*float(${res.w*scale}), (uv.y-0.5)*float(${res.h*scale})) ? white : black;
+    gl_FragColor = f((uv.x-0.5)*float(${res.w*scale})+float(${origin.x}), (0.5-uv.y)*float(${res.h*scale})+float(${origin.y})) ? white : black;
   }
   `
     }
