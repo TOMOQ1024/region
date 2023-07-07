@@ -134,14 +134,14 @@ Node* func(int id)
 
     if(this.consumeToken(TokenType.LPT)){
       node = this.expr();
-      if(this.consumeToken(TokenType.CMA)){
-        node = new BNode(
-          BNodeKind.FNC,
-          new BNode(BNodeKind.FNC, node, null, FuncName.NIL),
-          this.expr(),
-          FuncName.NIL
-        );
-      }
+      // if(this.consumeToken(TokenType.CMA)){
+      //   node = new BNode(
+      //     BNodeKind.FNC,
+      //     new BNode(BNodeKind.FNC, node, null, FuncName.NIL),
+      //     this.expr(),
+      //     FuncName.NIL
+      //   );
+      // }
       while(this.consumeToken(TokenType.CMA)){
         node = new BNode(BNodeKind.FNC, node, this.expr(), FuncName.NIL);
       }
