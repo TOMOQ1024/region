@@ -45,7 +45,6 @@ export default function GLWrapper(
   }
 
   function HandleWheel(e: WheelEvent){
-    e.preventDefault();
     let glwr = document.querySelector('#gl-wrapper') as HTMLDivElement;
     if(!glwr)return;
     let ds = Math.exp(e.deltaY/500);
