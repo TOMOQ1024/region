@@ -20,13 +20,16 @@ export default function Controls(
             updateGmgr={updateGmgr}
           />
         })}
-        <div className='expression-banner' onClick={()=>gmgr.pushNewExpression()}>
+        <div className='expression-banner' onClick={()=>{
+          gmgr.pushNewExpression();
+          updateGmgr();
+        }}>
           <div className='expression-icon'>+</div>
           <span
             className="textarea"
             role="textbox"
             // contentEditable
-            suppressContentEditableWarning
+            // suppressContentEditableWarning
           >{'Click here to add banner'}</span>
         </div>
       </div>

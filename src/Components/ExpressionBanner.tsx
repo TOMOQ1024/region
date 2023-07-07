@@ -55,7 +55,10 @@ export default function ExpressionBanner(
     >
       {gmgr.expressions[exprno].expression}
     </span>
-    <div className='expression-del-icon' onClick={e=>gmgr.removeExpressionAt(exprno)}>x</div>
+    <div className='expression-del-icon' onClick={e=>{
+      gmgr.removeExpressionAt(exprno);
+      updateGmgr();
+    }}>x</div>
     {/* <div className='expression-del-icon' onClick={e=>(e.target as HTMLElement).parentElement?.parentElement?.removeChild((e.target as HTMLElement).parentElement!)}>x</div> */}
   </div>
 }

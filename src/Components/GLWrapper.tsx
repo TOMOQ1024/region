@@ -17,9 +17,7 @@ export default function GLWrapper(
 
   useEffect(()=>{
     setExp(e=>{
-      let ne = gmgr.expressions.map(e=>e.statement).join('\n');
-      if(ne === '') return 'false';
-      return ne;
+      return gmgr.expressions.map(ex=>ex.statement || false).join('||');
     });
     setRes(r=>({
       w: window.innerWidth - gmgr.controlsWidth,
