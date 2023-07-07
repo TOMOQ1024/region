@@ -2,6 +2,7 @@ import { Expr } from "../Utils";
 
 export default class GraphMgr {
   expressions: Expr[] = [];
+  controlsWidth: number = 400;
 
   constructor(){
     this.expressions.push(new Expr());
@@ -29,5 +30,9 @@ export default class GraphMgr {
 
   removeExpressionAt(i: number){
     return this.expressions.splice(i, 1);
+  }
+
+  setControlsWidth(fn: (cw:number)=>number){
+    this.controlsWidth = fn(this.controlsWidth);
   }
 }
