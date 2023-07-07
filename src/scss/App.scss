@@ -1,0 +1,12 @@
+:root {
+  --codefont: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace
+}
+
+* {
+  overflow: hidden;
+}
+
+#App {
+  height: 100vh;
+  display: flex;
+}

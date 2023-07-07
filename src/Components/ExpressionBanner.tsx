@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import GraphMgr from "../GraphManager/GraphMgr";
 import { Parse } from "../Parser/Main";
-import ReactDOM from "react-dom";
+import "../scss/ExpressionBanner.scss"
 
 export default function ExpressionBanner(
   {gmgr, updateGmgr, exprno}: {

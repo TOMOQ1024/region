@@ -17,6 +17,10 @@ export default function GLWrapper(
       if(ne === '') return 'false';
       return ne;
     });
+    setRes(r=>({
+      w: window.innerWidth - gmgr.controlsWidth,
+      h: window.innerHeight
+    }));
   }, [gmgr]);
 
   return (

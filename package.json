@@ -48,6 +48,7 @@
     "cross-env": "^7.0.3",
     "gh-pages": "^5.0.0",
     "gl-react": "^5.2.0",
-    "gl-react-dom": "^5.2.1"
+    "gl-react-dom": "^5.2.1",
+    "sass": "^1.63.6"
   }
 }
