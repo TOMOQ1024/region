@@ -1,5 +1,7 @@
 import ExpressionBanner from "./ExpressionBanner";
 import GraphMgr from "../GraphManager/GraphMgr";
+import '../scss/Controls.scss';
+import ControlsResizer from "./ControlsResizer";
 
 export default function Controls(
   {gmgr, updateGmgr} : {
@@ -8,7 +10,7 @@ export default function Controls(
   }){
   return (
     <div id='Controls'>
-      <div id='controls-wrapper' style={{'width':'300px'}}>
+      <div id='controls-wrapper' style={{'width':`${gmgr.controlsWidth}px`}}>
         <div id='controls-header'></div>
         {gmgr.expressions.map((e,ei)=>{
           return <ExpressionBanner
@@ -28,7 +30,7 @@ export default function Controls(
           >{'Click here to add banner'}</span>
         </div>
       </div>
-      <div id='controls-resizer'></div>
+      <ControlsResizer gmgr={gmgr} updateGmgr={updateGmgr}/>
     </div>
   )
 }
