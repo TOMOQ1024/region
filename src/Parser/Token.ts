@@ -3,6 +3,8 @@ import { VarName } from "./Var";
 
 export enum TokenType {
   VAR = 'var',
+  NID = 'nid',
+  DFD = 'dfd',
   EQL = 'eql',
   GEQ = 'geq',
   LEQ = 'leq',
@@ -31,7 +33,7 @@ export function isTokenType(input: any){
 export class Token {
   constructor(
     public type: TokenType = TokenType.UNK,
-    public value: (number | FuncName | VarName) = 0,
+    public value: (number | FuncName | VarName | string) = 0,
     public raw: string = ''
   ){}
 

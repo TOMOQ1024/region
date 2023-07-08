@@ -10,15 +10,15 @@ export default function GLWrapper(
   }
 ){
   const [res, setRes] = useState<Size>({w:800, h:800});
-  const [exp, setExp] = useState(gmgr.expressions[0].statement);
+  const [defis, setDefis] = useState(['']);
+  const [ineqs, setIneqs] = useState(['']);
   const [mouseDown, setMouseDown] = useState(false);
   const [origin, setOrigin] = useState<Point>({x:0,y:0});
   const [scale, setScale] = useState(10 / 800);
 
   useEffect(()=>{
-    setExp(e=>{
-      return gmgr.expressions.map(ex=>ex.statement || false).join('||');
-    });
+    setDefis(gmgr.expressions.filter(ex=>ex.type==='defi').map(e=>e.statement));
+    setIneqs(gmgr.expressions.filter(ex=>ex.type==='ineq').map(e=>e.statement));
     setRes(r=>({
       w: window.innerWidth - gmgr.controlsWidth,
       h: window.innerHeight
@@ -68,7 +68,13 @@ export default function GLWrapper(
     onWheel={(e)=>HandleWheel(e as unknown as WheelEvent)}
     >
       <Surface width={res.w} height={res.h}>
-        <GraphComponent exp={exp} res={res} origin={origin} scale={scale}/>
+        <GraphComponent
+        defis={defis}
+        ineqs={ineqs}
+        res={res}
+        origin={origin}
+        scale={scale}
+        />
       </Surface>
     </div>
   );

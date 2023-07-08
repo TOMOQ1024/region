@@ -3,6 +3,7 @@ import { Expr, ExprType } from "../Utils";
 export default class GraphMgr {
   expressions: Expr[] = [];
   controlsWidth: number = 400;
+  definedVariableNames: string[] = [];
 
   constructor(){
     this.expressions.push(new Expr());
@@ -30,7 +31,21 @@ export default class GraphMgr {
   }
 
   removeExpressionAt(i: number){
+    if(this.expressions[i].type === 'defi'){
+      this.definedVariableNames = this.definedVariableNames.filter(
+        n=>n!==this.expressions[i].statement.split('=')[0]
+      );
+    }
     return this.expressions.splice(i, 1);
+  }
+
+  updateDVN(){
+    this.definedVariableNames = [];
+    for(let j=0; j<this.expressions.length; j++){
+      if(this.expressions[j].type === 'defi'){
+        this.definedVariableNames.push(this.expressions[j].statement.split('=')[0]);
+      }
+    }
   }
 
   setControlsWidth(fn: (cw:number)=>number){

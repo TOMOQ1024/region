@@ -26,25 +26,38 @@ export default function ExpressionBanner(
     let range = document.createRange();
     
     // テキストの解析
-    let result = Parse(textarea.innerText);
+    let result = Parse(textarea.innerText, gmgr.definedVariableNames.filter(
+      vn=>vn!==gmgr.expressions[exprno].statement.split('=')[0]
+    ));
 
+    
+    gmgr.updateDVN();
     if(result.status){
       gmgr.setExpressionAt(exprno, result.type, textarea.innerText);
       gmgr.setStatementAt(exprno, result.result);
-      updateGmgr();
-
-      // 再描画が行われるため，カーソルの選択場所を復元する
-      setTimeout(()=>{
-        range.setStart(textarea.firstChild!, so);
-        range.setEnd(textarea.firstChild!, eo);
-        window.getSelection()?.removeAllRanges();
-        window.getSelection()?.addRange(range);
-      }, 10);
     }
+    updateGmgr();
+
+    // 再描画が行われるため，カーソルの選択場所を復元する
+    setTimeout(()=>{
+      if(textarea.firstChild){
+        range.setStart(textarea.firstChild, so);
+        range.setEnd(textarea.firstChild, eo);
+      } else {
+        range.setStart(textarea, so);
+        range.setEnd(textarea, eo);
+      }
+      window.getSelection()?.removeAllRanges();
+      window.getSelection()?.addRange(range);
+    }, 10);
   }
 
   return <div className='expression-banner'>
-    <div className='expression-icon'>{gmgr.expressions[exprno].type==='defi' ? '=' : '>'}</div>
+    <div className='expression-icon'>{{
+      'defi': '=',
+      'ineq': '>',
+      'null': '-',
+    }[gmgr.expressions[exprno].type]}</div>
     <span
       className="textarea"
       role="textbox"
