@@ -1,3 +1,4 @@
+import { ExprType } from "../Utils";
 import { FuncName, isFuncName } from "./Func";
 import { BNode, BNodeKind, isBNodeKind } from "./Node";
 import { VarName } from "./Var";
@@ -24,10 +25,12 @@ function average(...args:number[]){
 export class CStack {
   // opStack: OpStack = [];
   root: (BNode|null) = null;
+  eType: ExprType;
 
-  constructor(node: BNode){
+  constructor(node: BNode, eType: ExprType){
     // this.opStack = [];
     this.root = node;
+    this.eType = eType;
     // this.gen(node);
   }
 
@@ -100,6 +103,11 @@ export class CStack {
         }
         break;
       case BNodeKind.NUM: return `float(${node.val})`;
+      case BNodeKind.NID: return `${node.val}`;
+      case BNodeKind.DFD: return `${node.val}`;
+      case BNodeKind.EQL: return this.eType==='defi'
+        ? `${this.togl(node.lhs)}=${this.togl(node.rhs)}`
+        : `${this.togl(node.lhs)}==${this.togl(node.rhs)}`;
       case BNodeKind.GEQ: return `${this.togl(node.lhs)}>=${this.togl(node.rhs)}`;
       case BNodeKind.LEQ: return `${this.togl(node.lhs)}<=${this.togl(node.rhs)}`;
       case BNodeKind.GET: return `${this.togl(node.lhs)}>${this.togl(node.rhs)}`;

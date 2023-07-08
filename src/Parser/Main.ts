@@ -1,26 +1,33 @@
-import { NullParseResult, ParseResult } from "../Utils";
+import { ExprType, NullParseResult, ParseResult } from "../Utils";
 import { CStack } from "./CStack";
 import { BNode } from "./Node";
 import Parser from "./Parser";
 
-export function Parse(input: string): ParseResult {
+export function Parse(input: string, dvn: string[]): ParseResult {
+  let parser = new Parser();
+  let n: number;
+  let result: (BNode|null);
+  let cst: (CStack|undefined);
+
+  let eType: ExprType;
+
   if(!input.match(/[<>=]/)){
     return NullParseResult;
+  } else if(input.match(/[><]/)){
+    eType = 'ineq';
+  } else {
+    eType = 'defi';
   }
 
-  let parser = new Parser();
-
-  console.log(`input: "${input}"`);
   console.clear();
-  let n: number;
-  let result: BNode;
-  let cst: (CStack|undefined);
+  console.log(`input: "${input}"`);
   try {
     n = performance.now();
-    result = parser.parse(input);
+    result = parser.parse(input, eType, dvn);
+    if(!result)return NullParseResult;
     console.log(result.toStr());
     console.log(`parse end in ${performance.now()-n}ms`);
-    cst = new CStack(result);
+    cst = new CStack(result, eType);
     console.log(cst.togl(cst.root));
   } catch (e) {
     console.error(e);
