@@ -29,7 +29,7 @@ export default function ExpressionBanner(
     let result = Parse(textarea.innerText);
 
     if(result.status){
-      gmgr.setExpressionAt(exprno, textarea.innerText);
+      gmgr.setExpressionAt(exprno, result.type, textarea.innerText);
       gmgr.setStatementAt(exprno, result.result);
       updateGmgr();
 

@@ -1,4 +1,4 @@
-import { Expr } from "../Utils";
+import { Expr, ExprType } from "../Utils";
 
 export default class GraphMgr {
   expressions: Expr[] = [];
@@ -8,11 +8,12 @@ export default class GraphMgr {
     this.expressions.push(new Expr());
   }
 
-  setExpressionAt(i: number, e=''){
+  setExpressionAt(i: number, t: ExprType, e=''){
     if(this.expressions.length <= i){
       console.error(`Index Out of Range: ${this.expressions.length} <= ${i}`);
       process.exit();
     }
+    this.expressions[i].type = t;
     this.expressions[i].expression = e;
   }
 

@@ -1,14 +1,11 @@
-import { ParseResult } from "../Utils";
+import { NullParseResult, ParseResult } from "../Utils";
 import { CStack } from "./CStack";
 import { BNode } from "./Node";
 import Parser from "./Parser";
 
 export function Parse(input: string): ParseResult {
   if(!input.match(/[<>=]/)){
-    return ({
-      status: false,
-      result: ''
-    });
+    return NullParseResult;
   }
 
   let parser = new Parser();
@@ -27,13 +24,14 @@ export function Parse(input: string): ParseResult {
     console.log(cst.togl(cst.root));
   } catch (e) {
     console.error(e);
-    return ({ status: false, result: '' });
+    return NullParseResult;
   } finally {
     if(cst === undefined){
-      return ({status: false, result: ''});
+      return NullParseResult;
     }
     return ({
       status: true,
+      type: input.match(/=/) ? 'defi' : 'ineq',
       result: cst.togl(cst.root)
     });
   }
