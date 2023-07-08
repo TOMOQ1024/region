@@ -16,7 +16,7 @@ export interface Graph {
 export type ExprType = ['null', 'defi', 'ineq'][number];
 
 export class Expr {
-  type: ExprType = 'ineq';
+  type: ExprType = 'null';
   since: number;
   expression: string;
   statement: string;

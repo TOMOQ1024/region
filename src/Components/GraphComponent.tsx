@@ -2,12 +2,14 @@ import { Shaders, Node, GLSL } from "gl-react";
 import { Point, Size } from "../Utils";
 
 export default function GraphComponent({
-  exp,
+  defis,
+  ineqs,
   res,
   origin,
   scale,
 }:{
-  exp: string;
+  defis: string[];
+  ineqs: string[];
   res: Size;
   origin: Point;
   scale: number;
@@ -23,7 +25,8 @@ export default function GraphComponent({
   const vec4 black = vec4(0.0, 0.0, 0.0, 1.0);
 
   bool f(float x, float y){
-    return ${exp};
+    ${defis.map(d=>`float ${d};\n`).join('  ')}
+    return ${ineqs.length ? ineqs.join('||\n       ') : false};
   }
 
   void main() {

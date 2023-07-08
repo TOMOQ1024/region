@@ -3,6 +3,8 @@ import { VarName } from "./Var";
 
 export enum BNodeKind {
   VAR = 'var',
+  NID = 'nid',
+  DFD = 'dfd',
   EQL = 'eql',
   GEQ = 'geq',
   LEQ = 'leq',
@@ -29,7 +31,7 @@ export class BNode {
     public kind: BNodeKind = BNodeKind.UNK,
     public lhs: (BNode|null) = null,
     public rhs: (BNode|null) = null,
-    public val: (number|FuncName|VarName) = 0
+    public val: (number|FuncName|VarName|string) = 0
   ){}
 
   static zero = new BNode(BNodeKind.NUM, null, null, 0);

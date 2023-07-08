@@ -2,22 +2,34 @@ import { BNodeKind, BNode } from './Node';
 import { FuncName } from "./Func";
 import { Token, TokenType } from './Token'
 import { VarName } from './Var';
+import { ExprType } from '../Utils';
 
 export default class Parser {
-  vars: number[] = [];
+  eType: ExprType = 'null';
+  definedVariableNames: string[] = [];
   currentLine: string = '';
   currentPointer: number = 0;
   token = new Token();
 
   constructor(){}
 
-  parse(input: string): BNode {
+  parse(input: string, eType: ExprType, dvn: string[]): BNode {
+    this.eType = eType;
+    this.definedVariableNames = dvn;
     this.currentLine = input;
     this.currentPointer = 0;
 
     try {
       this.nextToken();
-      return this.ineq();
+      switch(eType){
+        case 'defi':
+          console.log('defi!');
+          return this.defi();
+        case 'ineq':
+          return this.ineq();
+        case 'null':
+          return new BNode();
+      }
     } catch (e) {
       console.error(e);
       process.exit(1);
@@ -39,6 +51,12 @@ export default class Parser {
         return node;
       }
     }
+  }
+
+  defi(): BNode {
+    let node = this.nwid();
+    this.expectToken(TokenType.EQL);
+    return new BNode(BNodeKind.EQL, node, this.expr());
   }
 
   expr(): BNode {
@@ -76,7 +94,7 @@ export default class Parser {
         node = new BNode(BNodeKind.DIV, node, this.powr());
       } else if(!this.checkTokens(
         TokenType.ADD, TokenType.SUB, TokenType.CMA, TokenType.RPT,
-        TokenType.GEQ, TokenType.LEQ, TokenType.GET, TokenType.LET,
+        TokenType.GEQ, TokenType.LEQ, TokenType.GET, TokenType.LET, TokenType.EQL
       ) && !this.checkToken(TokenType.EOL)){
         node = new BNode(BNodeKind.MUL, node, this.powr());
       } else {
@@ -109,6 +127,9 @@ export default class Parser {
     }
     else if(vn = this.consumeVar()){
       return this.vari(vn);
+    }
+    else if(this.checkToken(TokenType.DFD)){
+      return this.dfnd();
     }
     return this.nmbr(this.expectNumber());
   }
@@ -160,6 +181,34 @@ Node* func(int id)
     return new BNode(BNodeKind.VAR, null, null, vn);
   }
 
+  nwid(): BNode {
+    let str = this.currentLine.split('=')[0];
+    let fstr, lstr;
+    if(str.match(/.*\(.*\)/)){
+      fstr = str.split('(')[0];
+      lstr = str.match(/\(.*\)/)?.slice(1,-1);
+    } else {
+      fstr = str;
+      lstr = '';
+    }
+    if(fstr.match(/^[A-Za-z]\w*$/)){
+      this.currentPointer += fstr.length-1;
+      this.nextToken();
+      return new BNode(BNodeKind.NID, null, null, fstr);
+    }
+    throw new Error(`variable/function name is incorrect: ${fstr}`);
+  }
+
+  dfnd(): BNode {
+    let dvn = this.token.value as string;
+    if(dvn){
+      // this.currentPointer += dvn.length - 1;
+      this.nextToken();
+      return new BNode(BNodeKind.DFD, null, null, dvn);
+    }
+    throw new Error(`defined variable not found`);
+  }
+
   nmbr(x: number): BNode {
     return new BNode(BNodeKind.NUM, null, null, x);
   }
@@ -186,6 +235,7 @@ Node* func(int id)
     let str = this.currentLine.slice(this.currentPointer);
     let fn: FuncName;
     let vn: VarName;
+    let dvn: string;
     this.token = new Token(TokenType.UNK, 0, character);
 
     if (character === undefined) {
@@ -215,6 +265,13 @@ Node* func(int id)
       this.token.type = TokenType.VAR;
       this.token.value = vn;
       for(let i=0; i<vn.length; i++) this.nextCharacter();
+      return;
+    }
+
+    if (dvn = (str.match(new RegExp(`^(${this.definedVariableNames.join('|')})`))||[''])[0]){
+      this.token.type = TokenType.DFD;
+      this.token.value = dvn;
+      for(let i=0; i<dvn.length; i++) this.nextCharacter();
       return;
     }
 
@@ -347,9 +404,5 @@ Node* func(int id)
       }
     }
     return FuncName.NIL;
-  }
-
-  setVar(index: number, value: number) {
-    this.vars[index] = value;
   }
 }
